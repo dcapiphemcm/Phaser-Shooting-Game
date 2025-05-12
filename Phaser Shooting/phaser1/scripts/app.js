@@ -26,14 +26,14 @@ let spaceKey;
 let isGameFrozen = false;
 
 function preload () {
-    // Load audio files
+    // AUDIO
     this.load.audio("bgm", "../phaser1/assets/music/bgm.mp3");
     this.load.audio("gun", "../phaser1/assets/music/gun.mp3");
     this.load.audio("win", "../phaser1/assets/music/win.mp3");
     this.load.audio("lose", "../phaser1/assets/music/lose.mp3");
     this.load.audio("explode", "../phaser1/assets/music/explode.mp3");
 
-    // Load image assets
+    // IMAGE
     this.load.image("background", "../phaser1/assets/image/background.jpg");
     this.load.image("jet", "../phaser1/assets/image/jet.png");
     this.load.image("rock", "../phaser1/assets/image/rock.png");
@@ -42,49 +42,44 @@ function preload () {
 }
 
 function create () {
-    // Play background music (ensure it's not played multiple times)
+
     this.bgm = this.sound.add("bgm", { loop: true, volume: 0.5 });
     this.bgm.play();
 
-    // Reset variables
     isGameFrozen = false;
     let timeLeft = 120;
     let currentRockSpeed = 100;
     let rockSpeedIncreaseRate = 2;
 
-    // Background
     background = this.add.tileSprite(0, 0, config.width, config.height, "background").setOrigin(0, 0);
 
-    // Jet
+    // JEEETTTTT
     this.jet = this.physics.add.sprite(230, 800, 'jet');
     this.jet.setCollideWorldBounds(true);
     this.jet.body.allowGravity = false;
     this.jet.body.setSize(50, 80).setOffset(66, 10);
 
-    // Input
     cursors = this.input.keyboard.createCursorKeys();
     spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    // Groups
     this.rocks = this.physics.add.group();
     bullets = this.physics.add.group();
 
-    // Game over/win text (initially hidden)
     let statusText = this.add.text(config.width / 2, config.height / 2, '', {
         font: "48px Arial",
         fill: "#ffffff"
     }).setOrigin(0.5);
-    statusText.setAlpha(0); // Hidden initially
+    statusText.setAlpha(0); 
 
-   // Rock spawner
+   // ROOOCCKKKKK
 this.rockTimer = this.time.addEvent({
     delay: 1500,
     callback: () => {
         if (isGameFrozen) return;
 
-        // Loop to spawn 5 rocks with delays
+  
         for (let i = 0; i < 5; i++) {
-            const delay = Phaser.Math.Between(0, 500); // Random delay between 0ms and 500ms
+            const delay = Phaser.Math.Between(0, 500); 
             this.time.delayedCall(delay, () => {
                 const x = Phaser.Math.Between(50, 450);
                 const rock = this.rocks.create(x, -50, 'rock');
@@ -100,18 +95,16 @@ this.rockTimer = this.time.addEvent({
     loop: true
     });
 
-    // Bullet-rock collision
     this.physics.add.overlap(bullets, this.rocks, (bullet, rock) => {
         bullet.destroy();
         rock.hp--;
         if (rock.hp <= 0) {
             rock.destroy();
-            // Play explosion sound when a rock is destroyed
+           
             this.sound.play("explode", { volume: 0.5 });
         }
     }, null, this);
 
-    // Jet-rock collision
     this.physics.add.overlap(this.jet, this.rocks, () => {
         if (isGameFrozen) return;
         isGameFrozen = true;
@@ -131,12 +124,11 @@ this.rockTimer = this.time.addEvent({
             bullet.setVelocity(0);
         });
 
-        // Show "Game Over" text and play lose sound
         statusText.setText("Game Over");
-        statusText.setColor("#FF0000");  // Red color
+        statusText.setColor("#FF0000"); 
         statusText.setAlpha(1);
 
-        // Pause background music and play lose sound
+
         this.bgm.stop();
         this.sound.play("lose", { volume: 0.5 });
 
@@ -145,13 +137,12 @@ this.rockTimer = this.time.addEvent({
         });
     }, null, this);
 
-    // Timer text
+    // TIIMEEERRRRR
     timerText = this.add.text(10, 10, "Time: 2:00", {
         font: "24px Arial",
         fill: "#ffffff"
     });
-
-    // Timer countdown
+    
     this.time.addEvent({
         delay: 1000,
         callback: () => {
@@ -178,18 +169,15 @@ this.rockTimer = this.time.addEvent({
                     bullet.setVelocity(0);
                 });
 
-                // Show "You Win" text and play win sound
                 statusText.setText("You Win");
-                statusText.setColor("#00FF00");  // Green color
+                statusText.setColor("#00FF00"); 
                 statusText.setAlpha(1);
 
-                // Pause background music and play win sound
                 this.bgm.stop();
                 this.sound.play("win", { volume: 0.5 });
-
-                // Delay BGM playback for 3 seconds after the win sound
+                
                 this.time.delayedCall(3000, () => {
-                    // Ensure bgm only plays if it's not already playing
+              
                     if (!this.bgm.isPlaying) {
                         this.bgm.play();
                     }
@@ -222,7 +210,6 @@ function update () {
         bullet.setScale(0.5);
         bullet.body.allowGravity = false;
 
-        // Play gun sound when the jet shoots
         this.sound.play("gun", { volume: 0.5 });
     }
 
